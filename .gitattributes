@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.jar binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.zip binary
+*.apk binary
+*.aab binary
+*.tar.xz binary

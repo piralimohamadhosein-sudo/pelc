@@ -1,0 +1,20 @@
+<resources>
+    <string name="export_sheet_title">قالب خروجی را انتخاب کنید</string>
+    <string name="export_hint_pelc">پروژه همیشه به‌صورت قابل‌ویرایش با پسوند .pelc هم کنار فایل ذخیره می‌شود.</string>
+    <string name="format_png">تصویر PNG (شفاف)</string>
+    <string name="format_jpg">تصویر JPG</string>
+    <string name="format_svg">وکتور SVG</string>
+    <string name="format_pdf">سند PDF</string>
+    <string name="format_dxf">وکتور DXF (لحیه‌سازی/چوب)</string>
+    <string name="format_psd">لایه‌باز PSD (فتوشاپ)</string>
+    <string name="format_pelc">فقط پروژه .pelc</string>
+    <string name="export_scale">بزرگ‌نمایی</string>
+    <string name="export_quality">کیفیت JPG</string>
+    <string name="export_now">ساخت خروجی</string>
+    <string name="export_running">در حال ساخت خروجی…</string>
+    <string name="export_done">خروجی ساخته شد:\n%1$s</string>
+    <string name="export_failed">ساخت خروجی ناموفق بود: %1$s</string>
+    <string name="export_share">اشتراک‌گذاری</string>
+    <string name="export_close">بستن</string>
+    <string name="export_channel_name">عملیات خروجی</string>
+</resources>

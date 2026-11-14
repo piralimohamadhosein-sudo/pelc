@@ -1,0 +1,29 @@
+<resources>
+    <string name="editor_title">استودیو خوشنویسی پلک</string>
+    <string name="tab_layer">لایه</string>
+    <string name="tab_word">واژه</string>
+    <string name="tab_letter">حرف</string>
+    <string name="add_text">افزودن متن</string>
+    <string name="add_text_hint">واژه یا عبارت را بنویسید…</string>
+    <string name="add">افزودن</string>
+    <string name="cancel">انصراف</string>
+    <string name="delete_layer">حذف لایه</string>
+    <string name="opacity">شفافیت</string>
+    <string name="undo">واگرد</string>
+    <string name="redo">ازنو</string>
+    <string name="export_save">ذخیره</string>
+    <string name="empty_canvas_hint">بوم خالی است. با «افزودن متن» اولین واژه‌ات را بنویس.</string>
+    <string name="no_fonts_hint">هنوز قلمی بارگذاری نشده است؛ از بخش «واژه» یک فایل TTF/OTF وارد کنید یا با اجرای scripts/fetch-fonts.sh فونت‌های همراه را بساز.</string>
+    <string name="word_text_label">متن واژه</string>
+    <string name="font_size">اندازه قلم</string>
+    <string name="choose_font">انتخاب قلم</string>
+    <string name="import_font">وارد کردن قلم (TTF/OTF)</string>
+    <string name="color">رنگ</string>
+    <string name="letters_label">حرف موردنظر را انتخاب کن:</string>
+    <string name="variants_label">گونه‌های حرف</string>
+    <string name="no_variants">برای این قلم گونه‌ای یافت نشد.</string>
+    <string name="letter_font">قلم این حرف</string>
+    <string name="use_main_font">همان قلم واژه</string>
+    <string name="reset_letter">بازنشانی این حرف</string>
+    <string name="show_hide">نمایش/پنهان</string>
+</resources>

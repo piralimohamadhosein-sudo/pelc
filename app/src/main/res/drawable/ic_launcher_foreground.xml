@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- pelc launcher: a gold calligraphy pen nib on ink background. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#D4AF37"
+        android:pathData="M54,18 C60,30 70,42 70,54 C70,66 62,74 54,88 C46,74 38,66 38,54 C38,42 48,30 54,18 Z" />
+    <path
+        android:fillColor="#101418"
+        android:pathData="M54,52 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+    <path
+        android:strokeColor="#101418"
+        android:strokeWidth="2.4"
+        android:fillColor="#00000000"
+        android:pathData="M54,56 L54,86" />
+</vector>

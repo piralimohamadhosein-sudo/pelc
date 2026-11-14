@@ -1,0 +1,51 @@
+name: Release
+
+# On a version tag (v0.1.0, ...) build an installable APK and an AAB,
+# then attach both to a GitHub Release so users can download them.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Build release artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages (platform, NDK, CMake)
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager --install "ndk;27.0.12077973" "cmake;3.22.1"
+          yes | sdkmanager --licenses > /dev/null || true
+
+      - name: Build installable APK (debug-signed) and AAB
+        run: ./gradlew --no-daemon :app:assembleDebug :app:bundleRelease
+
+      - name: Rename artifacts
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk "dist/pelc-${GITHUB_REF_NAME}-install.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "dist/pelc-${GITHUB_REF_NAME}.aab" || true
+          ls -la dist
+
+      - name: Create GitHub Release and attach files
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

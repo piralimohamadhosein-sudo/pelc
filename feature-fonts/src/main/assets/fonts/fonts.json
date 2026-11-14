@@ -1,0 +1,16 @@
+{
+  "fonts": [
+    { "id": "amiri", "displayName": "امیری (نسخ)", "style": "نسخ", "license": "OFL-1.1", "file": "Amiri-Regular.ttf" },
+    { "id": "amiri-bold", "displayName": "امیری بولد (نسخ)", "style": "نسخ", "license": "OFL-1.1", "file": "Amiri-Bold.ttf" },
+    { "id": "scheherazade", "displayName": "شهرزاد نو (نسخ)", "style": "نسخ", "license": "OFL-1.1", "file": "ScheherazadeNew-Regular.ttf" },
+    { "id": "reemkufi", "displayName": "ریم کوفی", "style": "کوفی", "license": "OFL-1.1", "file": "ReemKufi[wght].ttf" },
+    { "id": "arefruqaa", "displayName": "عارف رقعه", "style": "رقعه", "license": "OFL-1.1", "file": "ArefRuqaa-Regular.ttf" },
+    { "id": "arefruqaa-bold", "displayName": "عارف رقعه بولد", "style": "رقعه", "license": "OFL-1.1", "file": "ArefRuqaa-Bold.ttf" },
+    { "id": "lateef", "displayName": "لطیف", "style": "نسخ", "license": "OFL-1.1", "file": "Lateef-Regular.ttf" },
+    { "id": "gulzar", "displayName": "گلزار (نستعلیق)", "style": "نستعلیق", "license": "OFL-1.1", "file": "Gulzar-Regular.ttf" },
+    { "id": "notonastaliq", "displayName": "نوتو نستعلیق اردو", "style": "نستعلیق", "license": "OFL-1.1", "file": "NotoNastaliqUrdu[wght].ttf" },
+    { "id": "notonaskh", "displayName": "نوتو نسخ عربی", "style": "نسخ", "license": "OFL-1.1", "file": "NotoNaskhArabic[wght].ttf" },
+    { "id": "notokufi", "displayName": "نوتو کوفی عربی", "style": "کوفی", "license": "OFL-1.1", "file": "NotoKufiArabic[wght].ttf" },
+    { "id": "harmattan", "displayName": "هرمتان", "style": "نسخ غرب آفریقا", "license": "OFL-1.1", "file": "Harmattan-Regular.ttf" }
+  ]
+}
