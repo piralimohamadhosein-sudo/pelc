@@ -109,10 +109,18 @@ class PelcRenderer(
 
             canvas.save()
             canvas.translate(glyph.x * scale, glyph.y * scale)
-            override?.let {
-                canvas.translate(it.dx * scale, it.dy * scale)
-                canvas.rotate(it.rotateDeg)
-                canvas.scale(it.scale, it.scale)
+            if (override != null) {
+                if (glyph.markIndex > 0) {
+                    // تنظیم دستی علامت: هر علامت MarkSpec خودش را دارد
+                    override.marks.getOrNull(glyph.markIndex - 1)?.let { mark ->
+                        canvas.translate(mark.dx * scale, mark.dy * scale)
+                        canvas.scale(mark.scale, mark.scale)
+                    }
+                } else {
+                    canvas.translate(override.dx * scale, override.dy * scale)
+                    canvas.rotate(override.rotateDeg)
+                    canvas.scale(override.scale, override.scale)
+                }
             }
             canvas.scale(glyph.scale, glyph.scale)
 

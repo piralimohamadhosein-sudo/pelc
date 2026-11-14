@@ -3,6 +3,12 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// هم‌ترازی هدف JVM روی هر JDK میزبان (از ۱۷ تا ۲۱+)
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)

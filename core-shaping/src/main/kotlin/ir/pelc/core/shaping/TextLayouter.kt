@@ -29,6 +29,12 @@ class PlacedGlyph(
     /** Scale from outline base units ([OutlineOps.BASE_EM]) to document units. */
     val scale: Float,
     val override: LetterOverride? = null,
+    /** UTF-16 cluster index of this glyph inside the layer text (for hit-testing). */
+    val cluster: Int = 0,
+    /** Advance in document units — width of the box this glyph occupies. */
+    val advance: Float = 0f,
+    /** ۰ = حرف پایه؛ ۱ به بعد = علامت شمارهٔ n در همان کلاستر. */
+    val markIndex: Int = 0,
 )
 
 /** A fully laid-out text layer, renderer- and exporter-independent. */
@@ -65,6 +71,33 @@ class PlacedText(
             }
             BBox(minX, minY, maxX, maxY)
         }
+    }
+
+    /**
+     * جعبهٔ تقریبی هر کلاستر حرف برای انتخاب با لمس بوم. عمودی از اندازهٔ قلم
+     * تخمین زده می‌شود (از بالای نقطهٔ نشست تا زیر خط کرسی)؛ برای متن تک‌خطی
+     * (واژه‌های خوشنویسی) معتبر است.
+     */
+    val clusterBoxes: Map<Int, BBox> by lazy {
+        val map = HashMap<Int, BBox>()
+        for (g in glyphs) {
+            val top = g.y - fontSize * 0.95f
+            val bottom = g.y + fontSize * 0.30f
+            val left = g.x
+            val right = g.x + g.advance.coerceAtLeast(fontSize * 0.20f)
+            val old = map[g.cluster]
+            map[g.cluster] = if (old == null) {
+                BBox(left, top, right, bottom)
+            } else {
+                BBox(
+                    minOf(old.minX, left),
+                    minOf(old.minY, top),
+                    maxOf(old.maxX, right),
+                    maxOf(old.maxY, bottom),
+                )
+            }
+        }
+        map
     }
 }
 
@@ -133,9 +166,24 @@ class TextLayouter(
             val left = if (content.rtl) totalWidth - prefix - result.totalWidth else prefix
             prefix += result.totalWidth
 
+            // تفکیک حرف پایه از علامت‌های همان کلاستر: حرف پایه اولین گلیفِ
+            // دارای پیشروی واقعی است؛ علائم پیشروی تقریباً صفر دارند و بعداً
+            // تنظیم دستی [MarkSpec] روی آن‌ها اعمال می‌شود.
+            var prevCluster = -1
+            var baseSeen = false
+            var markCounter = 0
+
             for (g in result.glyphs) {
                 val outline = cachedOutline(run.font, g.glyphId) ?: continue
                 val globalCluster = run.start + g.cluster
+                if (g.cluster != prevCluster) {
+                    prevCluster = g.cluster
+                    baseSeen = false
+                    markCounter = 0
+                }
+                val isBase = !baseSeen && g.xAdvance > run.fontSize * 0.01f
+                if (isBase) baseSeen = true else markCounter++
+
                 out += PlacedGlyph(
                     glyphId = g.glyphId,
                     fontId = run.font.fontId,
@@ -145,6 +193,9 @@ class TextLayouter(
                     y = baselineY - g.yOffset,
                     scale = run.fontSize / OutlineOps.BASE_EM,
                     override = content.perLetter[globalCluster],
+                    cluster = globalCluster,
+                    advance = g.xAdvance,
+                    markIndex = if (isBase) 0 else markCounter,
                 )
             }
         }

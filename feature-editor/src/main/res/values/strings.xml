@@ -26,4 +26,8 @@
     <string name="use_main_font">همان قلم واژه</string>
     <string name="reset_letter">بازنشانی این حرف</string>
     <string name="show_hide">نمایش/پنهان</string>
+    <string name="history">تاریخچهٔ ویرایش</string>
+    <string name="history_hint">برای بازگشت به هر نقطه، همان گام را انتخاب کنید.</string>
+    <string name="history_start">شروع سند</string>
+    <string name="step_label">گام %1$d</string>
 </resources>

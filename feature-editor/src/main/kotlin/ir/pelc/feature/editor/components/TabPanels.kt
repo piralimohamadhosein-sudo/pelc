@@ -16,12 +16,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -39,7 +49,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ir.pelc.core.model.Layer
+import ir.pelc.core.model.MarkSpec
+import ir.pelc.core.model.MarkType
 import ir.pelc.core.model.PelcFont
+import ir.pelc.core.model.canKashidaBefore
 import ir.pelc.feature.editor.LetterUi
 
 // ---------------------------------------------------------------------------
@@ -146,8 +159,12 @@ fun WordPanel(
 }
 
 // ---------------------------------------------------------------------------
-// Letter panel (per-letter variants & fonts)
+// Letter panel (per-letter variants, fonts, kashida and marks)
 // ---------------------------------------------------------------------------
+
+private const val NUDGE_STEP = 4f
+private const val SCALE_UP = 1.1f
+private const val SCALE_DOWN = 0.9f
 
 @Composable
 fun LetterPanel(
@@ -160,6 +177,12 @@ fun LetterPanel(
     onVariant: (String?) -> Unit,
     onLetterFont: (String?) -> Unit,
     onResetLetter: () -> Unit,
+    onAddKashida: (Int) -> Unit,
+    onRemoveKashida: (Int) -> Unit,
+    onAddMark: (MarkType) -> Unit,
+    onRemoveMark: (Int) -> Unit,
+    onNudgeMark: (Int, Float, Float) -> Unit,
+    onScaleMark: (Int, Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val content = layer?.text
@@ -167,6 +190,7 @@ fun LetterPanel(
         PanelHint("برای ویرایش حروف، اول یک لایهٔ متن انتخاب کن.", modifier)
         return
     }
+    val cluster = selectedLetter?.let { s -> letters.firstOrNull { it.start == s } }
     val override = selectedLetter?.let { content.perLetter[it] }
 
     Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -182,6 +206,29 @@ fun LetterPanel(
             }
         }
         Spacer(Modifier.height(8.dp))
+
+        if (cluster == null) {
+            Text(
+                "برای کشیده و علامت‌ها، اول یک حرف انتخاب کن.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        } else {
+            KashidaSection(
+                count = cluster.kashidaCount,
+                canAdd = canKashidaBefore(content.text, cluster.start),
+                onAdd = { onAddKashida(cluster.start) },
+                onRemove = { onRemoveKashida(cluster.start) },
+            )
+            Spacer(Modifier.height(8.dp))
+            MarksSection(
+                marks = override?.marks.orEmpty(),
+                onAddMark = onAddMark,
+                onRemoveMark = onRemoveMark,
+                onNudgeMark = onNudgeMark,
+                onScaleMark = onScaleMark,
+            )
+            Spacer(Modifier.height(8.dp))
+        }
 
         Text("گونه‌های حرف", style = MaterialTheme.typography.titleSmall)
         if (variants.isEmpty()) {
@@ -214,6 +261,100 @@ fun LetterPanel(
         Spacer(Modifier.height(8.dp))
         OutlinedButton(onClick = onResetLetter, enabled = override != null) {
             Text("بازنشانی این حرف")
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// کشیده (تطویل)
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun KashidaSection(
+    count: Int,
+    canAdd: Boolean,
+    onAdd: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    Text("کشیده (تطویل)", style = MaterialTheme.typography.titleSmall)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            "تعداد پیش از این حرف: $count",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        IconButton(onClick = onRemove, enabled = count > 0) {
+            Icon(Icons.Filled.Remove, contentDescription = "حذف یک کشیده")
+        }
+        IconButton(onClick = onAdd, enabled = canAdd) {
+            Icon(Icons.Filled.Add, contentDescription = "افزودن کشیده")
+        }
+    }
+    if (!canAdd && count == 0) {
+        Text(
+            "در این نقطه اتصالی نیست؛ کشیده فقط میان دو حرفِ متصل معنا دارد (لام‌الف و نیم‌فاصله اجازه نمی‌دهند).",
+            style = MaterialTheme.typography.bodySmall,
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// علامت‌ها (فتحه، ضمه، کسره، تشدید، سکون، تنوین‌ها)
+// ---------------------------------------------------------------------------
+
+@Composable
+private fun MarksSection(
+    marks: List<MarkSpec>,
+    onAddMark: (MarkType) -> Unit,
+    onRemoveMark: (Int) -> Unit,
+    onNudgeMark: (Int, Float, Float) -> Unit,
+    onScaleMark: (Int, Float) -> Unit,
+) {
+    Text("علامت‌ها", style = MaterialTheme.typography.titleSmall)
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        items(MarkType.entries) { type ->
+            FilterChip(
+                selected = false,
+                onClick = { onAddMark(type) },
+                label = { Text("+ ${type.title}") },
+            )
+        }
+    }
+    if (marks.isEmpty()) {
+        Text(
+            "برای این حرف علامتی نیست؛ از چیپ‌های بالا اضافه کن.",
+            style = MaterialTheme.typography.bodySmall,
+        )
+    } else {
+        marks.forEachIndexed { index, mark ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "${index + 1}. ${mark.type.title}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = { onNudgeMark(index, -NUDGE_STEP, 0f) }) {
+                    Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = "علامت چپ‌تر")
+                }
+                IconButton(onClick = { onNudgeMark(index, NUDGE_STEP, 0f) }) {
+                    Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "علامت راست‌تر")
+                }
+                IconButton(onClick = { onNudgeMark(index, 0f, -NUDGE_STEP) }) {
+                    Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "علامت بالاتر")
+                }
+                IconButton(onClick = { onNudgeMark(index, 0f, NUDGE_STEP) }) {
+                    Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "علامت پایین‌تر")
+                }
+                IconButton(onClick = { onScaleMark(index, SCALE_DOWN) }) {
+                    Icon(Icons.Filled.Remove, contentDescription = "علامت کوچک‌تر")
+                }
+                IconButton(onClick = { onScaleMark(index, SCALE_UP) }) {
+                    Icon(Icons.Filled.Add, contentDescription = "علامت بزرگ‌تر")
+                }
+                IconButton(onClick = { onRemoveMark(index) }) {
+                    Icon(Icons.Filled.Close, contentDescription = "حذف علامت")
+                }
+            }
         }
     }
 }
