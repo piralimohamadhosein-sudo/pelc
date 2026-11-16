@@ -24,14 +24,12 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install SDK packages (platform, NDK, CMake)
         run: |
-          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-          sdkmanager --install "ndk;27.0.12077973" "cmake;3.22.1"
-          yes | sdkmanager --licenses > /dev/null || true
+          SDKM="${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools/latest/bin/sdkmanager"
+          "$SDKM" --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          "$SDKM" --install "ndk;27.0.12077973" "cmake;3.22.1"
+          yes | "$SDKM" --licenses > /dev/null || true
 
       - name: Build installable APK (debug-signed) and AAB
         run: ./gradlew --no-daemon :app:assembleDebug :app:bundleRelease
