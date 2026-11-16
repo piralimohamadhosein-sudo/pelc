@@ -8,6 +8,10 @@ on:
       - 'v*'
   workflow_dispatch:
 
+# ساخت Release و پیوست فایل‌ها به مجوز نوشتن محتوا نیاز دارد
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Build release artifacts
