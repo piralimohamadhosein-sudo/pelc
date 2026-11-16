@@ -66,7 +66,8 @@ class PsdWriterTest {
         assertEquals(sectionLength, 4 + layerInfoLength + 4)
 
         // After the section: raw composite = compression(short) + 4 planes of 4 px
-        d.skipBytes(sectionLength)
+        // فیلد «طول layer info» بالاتر خوانده شده — پس از پرش، ۴ بایتِ آن کم می‌شود
+        d.skipBytes(sectionLength - 4)
         assertEquals(0, d.readShort().toInt()) // compression raw
         val remaining = bytes.size - 26 - 4 - 4 - 4 - sectionLength - 2
         assertEquals(16, remaining) // 4 channels x 4 pixels
