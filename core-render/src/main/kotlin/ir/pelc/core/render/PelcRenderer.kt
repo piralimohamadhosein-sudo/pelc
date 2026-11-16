@@ -76,12 +76,14 @@ class PelcRenderer(
             style = if (text.fillMode == FillMode.OUTLINE) Paint.Style.STROKE else Paint.Style.FILL
             strokeWidth = text.strokeWidth * scale
         }
-        val shader = if (text.fillMode == FillMode.GOLD && text.gold != null) {
+        // gold از ماژول دیگر می‌آید — smart cast ممکن نیست؛ در متغیر محلی می‌گیریم
+        val goldSpec = text.gold
+        val shader = if (text.fillMode == FillMode.GOLD && goldSpec != null) {
             val height = (text.bounds.maxY - text.bounds.minY).coerceAtLeast(1f) * scale
             LinearGradient(
                 0f, 0f, 0f, height,
-                text.gold.innerColor.toInt(),
-                text.gold.outerColor.toInt(),
+                goldSpec.innerColor.toInt(),
+                goldSpec.outerColor.toInt(),
                 Shader.TileMode.CLAMP,
             )
         } else {
