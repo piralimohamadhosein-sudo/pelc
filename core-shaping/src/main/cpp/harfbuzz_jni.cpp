@@ -86,7 +86,8 @@ hb_draw_funcs_t* drawFuncs() {
         hb_draw_funcs_set_line_to_func(created, drawLineTo, nullptr, nullptr);
         hb_draw_funcs_set_quadratic_to_func(created, drawQuadraticTo, nullptr, nullptr);
         hb_draw_funcs_set_cubic_to_func(created, drawCubicTo, nullptr, nullptr);
-        hb_draw_funcs_set_close_func(created, drawClose, nullptr, nullptr);
+        // HarfBuzz ≥ 7.0: نام تابع به close_path تغییر کرده است
+        hb_draw_funcs_set_close_path_func(created, drawClose, nullptr, nullptr);
         hb_draw_funcs_make_immutable(created);
         funcs = created;
     }
