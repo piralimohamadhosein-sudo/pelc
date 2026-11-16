@@ -78,7 +78,8 @@ class PsdWriter {
 
         val layerAndMask = ByteArrayOutputStream()
         val ld = DataOutputStream(layerAndMask)
-        ld.writeInt(4 + layerInfoBytes.size + channelBytes.size + 4) // section length
+        // طبق مشخصهٔ Adobe: طولِ بخش، خودِ فیلد ۴بایتی را نمی‌شمارد — پس بافر با
+        // فیلد «طولِ layer info» آغاز می‌شود و طولِ بخش فقط بخشِ پس از خودش را می‌گیرد
         ld.writeInt(layerInfoBytes.size + channelBytes.size) // layer info length
         ld.write(layerInfoBytes)
         ld.write(channelBytes)
