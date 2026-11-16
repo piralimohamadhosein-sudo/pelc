@@ -14,7 +14,7 @@ class PsdWriterTest {
         val r = ByteArray(size) { 0x10 }
         val g = ByteArray(size) { 0x20 }
         val b = ByteArray(size) { 0x30 }
-        val a = ByteArray(size) { 0xFF }
+        val a = ByteArray(size) { 0xFF.toByte() }
         return PsdRaster(2, 2, r, g, b, a)
     }
 

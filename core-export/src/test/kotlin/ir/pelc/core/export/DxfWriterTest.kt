@@ -6,6 +6,7 @@ import ir.pelc.core.model.PelcDocument
 import ir.pelc.core.shaping.PlacedGlyph
 import ir.pelc.core.shaping.PlacedText
 import ir.pelc.core.model.Transform
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
