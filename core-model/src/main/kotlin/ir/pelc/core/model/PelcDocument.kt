@@ -111,5 +111,6 @@ data class PelcDocument(
     val width: Int get() = canvas.width
     val height: Int get() = canvas.height
 
-    fun findLayer(id: String): Layer? = layers.firstOrNull { it.id == id }
+    /** id می‌تواند null باشد (انتخاب خالی) — در آن صورت null برمی‌گردد */
+    fun findLayer(id: String?): Layer? = id?.let { needle -> layers.firstOrNull { it.id == needle } }
 }
