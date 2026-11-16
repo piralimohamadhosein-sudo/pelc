@@ -16,21 +16,21 @@ class PsdComposer(private val renderer: PelcRenderer) {
         val widthPx = (document.width * scale).roundToInt().coerceAtLeast(1)
 
         val composite = rasterize(document, widthPx) { true }
-        val layers = document.layers.asSequence()
-            .filter { it.visible }
-            .mapNotNull { layer ->
-                val raster = rasterize(document, widthPx) { it == layer.id }
-                if (raster.width == 0 || raster.height == 0) {
-                    return@mapNotNull null
-                }
+        // rasterize suspend است — داخل لامبدای mapNotNull نمی‌شود صدا زد؛ پس حلقهٔ معمولی
+        val layers = mutableListOf<PsdLayerData>()
+        for (layer in document.layers) {
+            if (!layer.visible) continue
+            val raster = rasterize(document, widthPx) { it == layer.id }
+            if (raster.width == 0 || raster.height == 0) continue
+            layers.add(
                 PsdLayerData(
                     name = layer.name.ifBlank { "Layer" },
                     raster = raster,
                     opacity = (layer.opacity * 255).roundToInt().coerceIn(0, 255),
                     visible = layer.visible,
-                )
-            }
-            .toList()
+                ),
+            )
+        }
 
         return PsdFileData(widthPx, composite.height, composite, layers)
     }
